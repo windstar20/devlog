@@ -1,6 +1,7 @@
 import 'css/tailwind.css'
 import 'pliny/search/algolia.css'
 import 'remark-github-blockquote-alert/alert.css'
+import 'public/static/fonts/PretendardStd-1.3.9/web/variable/pretendardvariable-std.css'
 
 import { Space_Grotesk } from 'next/font/google'
 import { Analytics, AnalyticsConfig } from 'pliny/analytics'
@@ -18,6 +19,7 @@ const space_grotesk = Space_Grotesk({
   variable: '--font-space-grotesk',
 })
 
+// import 'public/static/fonts/PretendardStd-1.3.9/web/variable/pretendardvariable-std.css'
 export const metadata: Metadata = {
   metadataBase: new URL(siteMetadata.siteUrl),
   title: {

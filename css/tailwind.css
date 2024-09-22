@@ -58,3 +58,9 @@ input:-webkit-autofill:focus {
   display: inline-block;
   vertical-align: middle;
 }
+
+@layer base {
+  .font-pretendard {
+    font-family: 'Pretendard Std', sans-serif;
+  }
+}

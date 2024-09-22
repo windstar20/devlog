@@ -1,5 +1,6 @@
 import 'css/prism.css'
 import 'katex/dist/katex.css'
+import 'public/static/fonts/PretendardStd-1.3.9/web/variable/pretendardvariable-std.css'
 
 import PageTitle from '@/components/PageTitle'
 import { components } from '@/components/MDXComponents'

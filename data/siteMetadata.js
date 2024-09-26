@@ -1,8 +1,8 @@
 /** @type {import("pliny/config").PlinyConfig } */
 const siteMetadata = {
-  title: 'ethnos',
-  author: 'James Park',
-  headerTitle: 'James',
+  title: 'zagmachi',
+  author: 'Hyunmin Park',
+  headerTitle: 'Zagmachi',
   description: 'Be professional',
   language: 'en-us',
   theme: 'system', // system, dark or light

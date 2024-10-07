@@ -1,0 +1,76 @@
+---
+title: Json 구조 설계
+date: '2024-03-10'
+tags: ['json', '구조 설계']
+draft: false
+summary: 프로젝트의 JSON 구조화 과정과 개선점
+---
+
+Json 구조 설계에 관하여 고민했던 경험을 소개하려 합니다.
+>
+
+![example](/static/images/blog/json-structure/img.png)
+[네이버 폼](https://form.naver.com/) 또는 [구글 폼](https://docs.google.com/forms/u/0/?ec=asw-forms-hero-goto&tgif=d) 과 같은
+서비스를 사용해본 경험이 있으신가요?
+이러한 서식 서비스들은 온라인에서 디자인된 신청서나 설문 조사 양식을 사용자에게 제공합니다.
+개발 중인 서비스도 유사하지만 병원에서 사용되는 서비스라는 점에서 특징을 갖고 있습니다.
+>
+---
+### 필수 요구사항
+개발 초기에 필수적으로 구현해야하는 기능으로 드래그 앤 드롭 인터페이스를 사용하여,
+UI를 변경하는 요구사항이 있었습니다.
+>
+<figure>
+  <img src="/static/images/blog/json-structure/section.png" alt="배치"  />
+  <figcaption>이해를 돕기 위한 이미지입니다.</figcaption>
+</figure>
+* section : 최상위의 영역을 갖습니다. 여러개의 section 을 배치할 수 있습니다.
+* layout : section 의 하위에 존재하는 영역으로 여러개의 layout 을 배치할 수 있습니다.
+* tool : 사용자 입력 가능한 다양한 입력 도구들이 배치됩니다.
+>
+=> section, layout, tool 모든 요소들을 드래그 앤 드롭 인터페이스로 순서를 이동해야 합니다.
+
+---
+
+### 최초의 JSON 구조
+React 를 사용하여 프론트엔드 개발이을 시작되었고, 컴포넌트를 개발하기 전에
+JSON 을 다음과 같은 유형으로 구조화하였습니다.
+>
+
+```json
+* 이해를 돕기 위한 예시 코드
+{
+  "form" : {
+    "sections" : ["section1"]
+  },
+  "sections" : [
+    {"id" : "section1", name : "section", layouts: ["layout1"]}
+  ],
+  "layouts": [
+    {"id" : "layout1", name : "layout", tools: ["tool1", "tool2"]}
+  ],
+  "tools": [
+    {"id" : "tool1", name : "tool" },
+    {"id" : "tool2", name : "tool" }
+  ]
+}
+```
+form, section, layout 의 필드에서 section, layout, tool 의 순서를 배열로 관리하고 있습니다.
+
+
+
+
+
+
+Some Python code 🐍
+
+```python
+def fib():
+    a, b = 0, 1
+    while True:            # First iteration:
+        yield a            # yield 0 to start with and then
+        a, b = b, a + b    # a will now be 1, and b will also be 1, (0 + 1)
+
+for index, fibonacci_number in zip(range(10), fib()):
+     print('{i:3}: {f:3}'.format(i=index, f=fibonacci_number))
+```

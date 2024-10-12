@@ -6,71 +6,131 @@ draft: false
 summary: 프로젝트의 JSON 구조화 과정과 개선점
 ---
 
-Json 구조 설계에 관하여 고민했던 경험을 소개하려 합니다.
+Json 구조 설계에 관하여 고민했던 경험을 소개합니다.
 >
 
 ![example](/static/images/blog/json-structure/img.png)
 [네이버 폼](https://form.naver.com/) 또는 [구글 폼](https://docs.google.com/forms/u/0/?ec=asw-forms-hero-goto&tgif=d) 과 같은
 서비스를 사용해본 경험이 있으신가요?
 이러한 서식 서비스들은 온라인에서 디자인된 신청서나 설문 조사 양식을 사용자에게 제공합니다.
-개발 중인 서비스도 유사하지만 병원에서 사용되는 서비스라는 점에서 특징을 갖고 있습니다.
+현재 개발 중인 서비스도 서식을 만들고 제공한다는 점에서 유사하지만, 병원에서 사용되는 서비스라는 점에서 차이점을 갖습니다.
 >
 ---
-### 필수 요구사항
-개발 초기에 필수적으로 구현해야하는 기능으로 드래그 앤 드롭 인터페이스를 사용하여,
-UI를 변경하는 요구사항이 있었습니다.
+### 요구사항
 >
 <figure>
   <img src="/static/images/blog/json-structure/section.png" alt="배치"  />
-  <figcaption>이해를 돕기 위한 이미지입니다.</figcaption>
+  <figcaption>이해를 돕기 위한 이미지</figcaption>
 </figure>
-* section : 최상위의 영역을 갖습니다. 여러개의 section 을 배치할 수 있습니다.
-* layout : section 의 하위에 존재하는 영역으로 여러개의 layout 을 배치할 수 있습니다.
-* tool : 사용자 입력 가능한 다양한 입력 도구들이 배치됩니다.
+
+* section : n개의 section 을 배치할 수 있습니다.
+* layout : section 의 하위에 존재하는 영역으로 n개의 layout 을 배치할 수 있습니다.
+* tool : 다양한 입력 도구들이 배치됩니다.
 >
-=> section, layout, tool 모든 요소들을 드래그 앤 드롭 인터페이스로 순서를 이동해야 합니다.
+=> section, layout, tool 은 드래그 앤 드롭 인터페이스로 순서를 변경할 수 있습니다.
+=> section, layout, tool 은 사용자 인터페이스로 속성을 변경할 수 있습니다.
 
 ---
 
-### 최초의 JSON 구조
-React 를 사용하여 프론트엔드 개발이을 시작되었고, 컴포넌트를 개발하기 전에
+### 👉🏼최초의 JSON 구조
+React 를 사용하여 프론트엔드 개발이 시작되었고, 컴포넌트를 개발하기 전에
 JSON 을 다음과 같은 유형으로 구조화하였습니다.
 >
 
+
 ```json
-* 이해를 돕기 위한 예시 코드
+* 예시 코드
 {
-  "form" : {
-    "sections" : ["section1"]
+  "form": {
+    "name": "form",
+    "sections": ["section1"]
   },
-  "sections" : [
-    {"id" : "section1", name : "section", layouts: ["layout1"]}
+  "sections": [
+    {"id": "section1", "name": "첫번째 영역", "layouts": ["layout1", "layout2"]}
   ],
   "layouts": [
-    {"id" : "layout1", name : "layout", tools: ["tool1", "tool2"]}
+    {"id": "layout1", "name": "layout1", "tools": ["tool1", "tool2"]},
+    {"id": "layout2", "name": "layout2", "tools": ["tool3", "tool4"]}
   ],
   "tools": [
-    {"id" : "tool1", name : "tool" },
-    {"id" : "tool2", name : "tool" }
+    {"id": "tool1", "name": "tool"},
+    {"id": "tool2", "name": "tool"},
+    {"id": "tool3", "name": "tool"},
+    {"id": "tool4", "name": "tool"},
   ]
 }
 ```
-form, section, layout 의 필드에서 section, layout, tool 의 순서를 배열로 관리하고 있습니다.
+form, section, layout 필드에서 하위 필드인 sections, layouts, tools 에서 ID를 참조하여 순서를 배열로 관리합니다.
+예를들어 ```layout``` 의 순서를 변경해야 한다면, ```sections.layouts``` 배열에 접근하여 순서를 변경할 수 있습니다.
+이 구조는 데이터가 section, layout, tool 로 계층 관계를 직관적으로 확인 할 수 있어서,
+전체 데이터 구조를 한눈에 확인할 수 있다는 장점이 있습니다.
 
+하지만 해당 구조는 단점도 존재하는데요.
 
+첫 번째는 데이터가 많아질 경우 찾는 과정이 복잡하게 됩니다. 각 항목들을 참조하는 과정에서 중첩된 구조를
+따라가야 하기 때문에, 데이터가 많아질수록 복잡성이 증가합니다.
 
+두 번째는 값 변경과 순서 변경이라는 다른 동작임에도 불구하고 값을 변경하는 필드와 순서를 변경하는 필드가
+한 곳에 정의되어, 책임 분리가 이루어지지 않았습니다. 값 변경과 순서 변경은 서로 다른 의미와 목적을 갖기 때문에
+이러한 기능을 분리하지 않으면 코드의 유지보수성이 떨어지고, 오류가 발생할 가능성이 높아집니다.
 
+---
 
+### 👉🏼수정된 JSON 구조
 
-Some Python code 🐍
-
-```python
-def fib():
-    a, b = 0, 1
-    while True:            # First iteration:
-        yield a            # yield 0 to start with and then
-        a, b = b, a + b    # a will now be 1, and b will also be 1, (0 + 1)
-
-for index, fibonacci_number in zip(range(10), fib()):
-     print('{i:3}: {f:3}'.format(i=index, f=fibonacci_number))
+```json
+{
+  "form": {
+    "name": "form"
+  },
+  "sections": [
+    {"id": "section1", "name": "첫 번째 영역"}
+  ],
+  "layouts": [
+    {"id": "layout1", "name": "layout1"},
+    {"id": "layout2", "name": "layout2"},
+  ],
+  "tools": [
+    {"id": "tool1", "name": "tool"},
+    {"id": "tool2", "name": "tool"},
+    {"id": "tool3", "name": "tool"},
+    {"id": "tool4", "name": "tool"},
+  ],
+  "orders": [
+    {
+      "id": "section1",
+      "layouts": [
+        {
+          "id": "layout1",
+          "tools": ["tool1", "tool2"]
+        },
+        {
+          "id": "layout2",
+          "tools": ["tool3", "tool4"]
+        }
+      ]
+    }
+  ]
+}
 ```
+
+먼저 정의한 JSON 의 단점을 고려하여 구조를 다시 설계하였습니다.
+크게 달라진 점은 ```form, sections, laouts``` 라는 필드에서 순서를 담당하는 필드를 제거하고,
+```orders``` 라고 하는 필드를 새롭게 추가하였습니다.
+
+이제 값 변경과 순서를 변경하는 기능을 분리함으로써 데이터의 역할을 명확하게 분리할 수 있습니다.
+```orders``` 에서는 계층 구조와 순서만을 관리하기 때문에, 섹션이나 레이아웃의 순서를 변경할때
+```forms.sections``` 와 같이 접근할 필요없이 ```orders``` 만을 수정하면 됩니다.
+또한 특정 섹션의 값을 변경할 때도 ```sections``` 에서 ```id``` 를 조회하여 값을 변경할 수 있습니다.
+
+---
+
+### 마치며
+
+저는 이러한 JSON 구조를 사용하여 D&D 기능과 데이터를 수정하는 기능을 구현하였습니다.
+최근에는 기능을 구현하기 전에 "데이터 구조를 어떻게 정의할지"에 대한 고민을 하게 됩니다.
+이러한 고민이 필요하지 않는 UI도 있지만, 어떤 기능들은 반드시 이 고민을 필요로 하게 되는 것 같습니다.
+
+긴 글 읽어 주셔서 감사합니다.
+
+

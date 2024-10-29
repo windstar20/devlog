@@ -1,0 +1,84 @@
+---
+title: vite path alias 설정
+date: '2024-10-29'
+tags: ['json', '구조 설계']
+draft: false
+summary: vite 빌드 툴 path alias 설정하기
+---
+
+React 프로젝트에서 Path Aliasing을 설정하면, 복잡하고 긴 상대 경로 대신 짧고 명확한 경로로 모듈을 import할 수 있습니다. 본 글에서는 Path Aliasing을 설정하는 방법에 대해 설명합니다.
+>
+
+>
+---
+### Path alias 란?
+>
+Path alias 는 프로젝트 내에서 특정 경로를 별칭(alias)으로 정의하여 import 할 수 있도록 하는 기능입니다.
+
+예를 들어, 아래 코드와 같이 길고 복잡한 경로 대신에
+```
+import MyComponent from '../../../components/MyComponent';
+```
+다음과 같이 짧고 명확하게 코드를 작성할 수 있습니다.
+```
+import MyComponent from '@components/MyComponent';
+```
+
+#### vite-tsconfig-paths 설치
+```
+# yarn 사용시
+yarn add vite-tsconfig-paths
+```
+
+### vite.config.ts 설정
+```
+export default defineConfig({
+  base: './',
+  define: {
+    APP_VERSION: JSON.stringify(process.env.npm_package_version),
+  },
+  plugins: [
+    react(),
+    wyw({
+      include: ['**/*.{ts,tsx}'],
+      babelOptions: {
+        presets: ['@babel/preset-typescript', '@babel/preset-react'],
+      },
+    }),
+    svgr({}),
+    tsconfigPaths(), //vite-tsconfig-paths 플러그인 추가
+  ],
+});
+```
+
+### tsconfig.json
+위 vite.config 설정을 하면 JavaScript의 경우는 설정을 추가적으로 할 필요가 없지만, TypeScript의 경우에는 개발시 컴파일 오류가 발생하게 됩니다. TypeScript에서도 별칭을 올바르게 인식하기 위해 tsconfig.json 파일에 alias 경로를 설정해줘야 합니다.
+tsconfig.app.json에 path alias 설정
+tsconfig.app.json 파일을 열어 compilerOptions > paths 속성에 별칭(alias)을 추가합니다.
+```
+{
+  "compilerOptions": {
+    //중략
+    /* path alias */
+    "baseUrl" : "src",
+    "paths" : {
+      "@/features/*" : ["features/*"],
+      "@/@shared/*" : ["@shared/*"],
+      "@/*" : ["*"]
+    }
+  },
+}
+```
+여기까지 하면 TypeScript 컴파일러가 별칭을 이해하고 올바르게 해석할 수 있게 됩니다.
+
+
+### Path Alias 사용하기
+```
+// path alias 설정 전
+import Layout from '../features/components/templates/layout/Layout.tsx';
+```
+```
+// path alias 설정 후
+import Layout from '@/features/components/templates/layout/Layout.tsx';
+```
+

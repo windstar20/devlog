@@ -17,11 +17,11 @@ Path alias 는 프로젝트 내에서 특정 경로를 별칭(alias)으로 정�
 
 예를 들어, 아래 코드와 같이 길고 복잡한 경로 대신에
 ```
-import MyComponent from '../../../components/MyComponent';
+import Component from '../../../components/Component';
 ```
 다음과 같이 짧고 명확하게 코드를 작성할 수 있습니다.
 ```
-import MyComponent from '@components/MyComponent';
+import Component from '@components/Component';
 ```
 
 #### vite-tsconfig-paths 설치
@@ -39,12 +39,6 @@ export default defineConfig({
   },
   plugins: [
     react(),
-    wyw({
-      include: ['**/*.{ts,tsx}'],
-      babelOptions: {
-        presets: ['@babel/preset-typescript', '@babel/preset-react'],
-      },
-    }),
     svgr({}),
     tsconfigPaths(), //vite-tsconfig-paths 플러그인 추가
   ],
@@ -70,7 +64,6 @@ tsconfig.app.json 파일을 열어 compilerOptions > paths 속성에 별칭(alia
 }
 ```
 여기까지 하면 TypeScript 컴파일러가 별칭을 이해하고 올바르게 해석할 수 있게 됩니다.
-
 
 ### Path Alias 사용하기
 ```
